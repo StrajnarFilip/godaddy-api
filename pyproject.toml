@@ -27,9 +27,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/unknown/godaddy-api#readme"
-Issues = "https://github.com/unknown/godaddy-api/issues"
-Source = "https://github.com/unknown/godaddy-api"
+Documentation = "https://github.com/StrajnarFilip/godaddy-api"
+Issues = "https://github.com/StrajnarFilip/godaddy-api"
+Source = "https://github.com/StrajnarFilip/godaddy-api"
 
 [tool.hatch.version]
 path = "src/godaddy_api/__about__.py"
