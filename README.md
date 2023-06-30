@@ -1,3 +1,7 @@
+This project is not affiliated, associated, authorized, endorsed by, or in any way officially
+connected with GoDaddy Inc., or any of its subsidiaries or its affiliates.
+
+
 # godaddy-api
 
 [![PyPI - Version](https://img.shields.io/pypi/v/godaddy-api.svg)](https://pypi.org/project/godaddy-api)

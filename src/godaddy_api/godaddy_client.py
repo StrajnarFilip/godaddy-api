@@ -7,6 +7,11 @@ from godaddy_api.data.domain_record import DomainRecord
 
 
 class GodaddyClient:
+    """
+    This client enables easy interaction with Shopper API provided by GoDaddy Inc.
+    Official API docs can be found (at the time of writing) on:
+    https://developer.godaddy.com/doc/endpoint/shoppers#/v1/get
+    """
 
     def __init__(self,
                  api_key: str,
@@ -54,7 +59,7 @@ class GodaddyClient:
         Status code `200` means it's successful.
         Status code `422` means record already exists.
 
-        Example:
+        Example for `something.com`:
 
         ```py
         client.add_a_record("something.com", "@", "123.123.123.123")
