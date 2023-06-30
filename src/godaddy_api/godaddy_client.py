@@ -10,7 +10,7 @@ class GodaddyClient:
     """
     This client enables easy interaction with Shopper API provided by GoDaddy Inc.
     Official API docs can be found (at the time of writing) on:
-    https://developer.godaddy.com/doc/endpoint/shoppers#/v1/get
+    https://developer.godaddy.com/doc/endpoint/domains
     """
 
     def __init__(self,
