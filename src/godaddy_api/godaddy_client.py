@@ -58,7 +58,14 @@ class GodaddyClient:
         """
         response = requests.get(f"{self.api_url}v1/domains/{domain}/records",
                                 headers=self.auth_header)
-        return response.json() if response.status_code == 200 else None
+        if response.status_code == 200:
+            return [
+                DomainRecord(record["data"], record["name"], 0, 0, "", "",
+                             record["ttl"], record["type"], 0)
+                for record in response.json()
+            ]
+        else:
+            return None
 
     def add_a_record(self, domain: str, record_name: str, ip_address: str):
         """
