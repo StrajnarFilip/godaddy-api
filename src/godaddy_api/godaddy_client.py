@@ -20,16 +20,16 @@ class GodaddyClient:
         self.api_key = api_key
         self.api_secret = api_secret
         self.api_url = api_url
+        self.auth_header = {
+            "Authorization": f"sso-key {self.api_key}:{self.api_secret}"
+        }
 
     def domains_available(self, domain: str) -> Union[DomainAvailable, None]:
         response = requests.get(f"{self.api_url}v1/domains/available",
                                 params={
                                     "domain": domain
                                 },
-                                headers={
-                                    "Authorization":
-                                    f"sso-key {self.api_key}:{self.api_secret}"
-                                }).json()
+                                headers=self.auth_header).json()
 
         try:
             return DomainAvailable(response["available"], response["currency"],
@@ -44,14 +44,21 @@ class GodaddyClient:
         """
 
         record_dictionaries = [asdict(record) for record in records]
-        response = requests.patch(
-            f"{self.api_url}v1/domains/{domain}/records",
-            json=record_dictionaries,
-            headers={
-                "Authorization": f"sso-key {self.api_key}:{self.api_secret}"
-            })
+        response = requests.patch(f"{self.api_url}v1/domains/{domain}/records",
+                                  json=record_dictionaries,
+                                  headers=self.auth_header)
 
         return response
+
+    def records_for_domain(self,
+                           domain: str) -> Union[list[DomainRecord], None]:
+        """
+        Returns list of existing records for the domain, or None
+        if request was not successful. 
+        """
+        response = requests.get(f"{self.api_url}v1/domains/{domain}/records",
+                                headers=self.auth_header)
+        return response.json() if response.status_code == 200 else None
 
     def add_a_record(self, domain: str, record_name: str, ip_address: str):
         """
@@ -84,9 +91,7 @@ class GodaddyClient:
         record_type = 'A'
         response = requests.delete(
             f"{self.api_url}v1/domains/{domain}/records/{record_type}/{record_name}",
-            headers={
-                "Authorization": f"sso-key {self.api_key}:{self.api_secret}"
-            })
+            headers=self.auth_header)
 
         return response
 
