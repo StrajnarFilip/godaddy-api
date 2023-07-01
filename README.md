@@ -7,13 +7,10 @@ connected with GoDaddy Inc., or any of its subsidiaries or its affiliates.
 [![PyPI - Version](https://img.shields.io/pypi/v/godaddy-api.svg)](https://pypi.org/project/godaddy-api)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/godaddy-api.svg)](https://pypi.org/project/godaddy-api)
 
------
+## Obtaining API key and secret
 
-**Table of Contents**
-
-- [Installation](#installation)
-- [License](#license)
-
+You can generate new API key and secret here:
+https://developer.godaddy.com/keys
 
 ## API environmental variables
 
