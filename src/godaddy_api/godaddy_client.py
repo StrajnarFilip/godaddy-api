@@ -25,6 +25,10 @@ class GodaddyClient:
         }
 
     def domains_available(self, domain: str) -> Union[DomainAvailable, None]:
+        """
+        Check if domain is available to be purchased.
+        Within DomainAvailable dataclass, there is `available` boolean field.
+        """
         response = requests.get(f"{self.api_url}v1/domains/available",
                                 params={
                                     "domain": domain

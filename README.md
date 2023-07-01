@@ -48,6 +48,18 @@ export GODADDY_API_URL='https://api.godaddy.com/'
 python -m godaddy_api "entire-domain.com" "subdomain" "123.123.123.123"
 ```
 
+## Using GodaddyClient
+
+You can use GodaddyClient class in your Python program.
+
+Example:
+```py
+from godaddy_api.godaddy_client import GodaddyClient
+
+client = GodaddyClient('xxx', 'yyy')
+client.domains_available('entire-domain.com')
+```
+
 ## Installation
 
 ```console
