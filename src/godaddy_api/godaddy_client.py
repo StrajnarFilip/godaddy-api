@@ -114,3 +114,17 @@ class GodaddyClient:
         self.remove_a_record(domain, record_name)
         response = self.add_a_record(domain, record_name, ip_address)
         return response
+
+    def list_domains(self):
+        """
+        Lists domains owned.
+        """
+
+        response = requests.get(f"{self.api_url}v1/domains",
+                                headers=self.auth_header)
+
+        print(response)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return response.status_code
