@@ -24,23 +24,23 @@ class GodaddyClient:
             "Authorization": f"sso-key {self.api_key}:{self.api_secret}"
         }
 
-    def domains_available(self, domain: str) -> Union[DomainAvailable, None]:
+    def domains_available(self, domain: str) -> Union[DomainAvailable, int]:
         """
         Check if domain is available to be purchased.
         Within DomainAvailable dataclass, there is `available` boolean field.
+        In case of exception, it returns status code of response.
         """
         response = requests.get(f"{self.api_url}v1/domains/available",
-                                params={
-                                    "domain": domain
-                                },
-                                headers=self.auth_header).json()
+                                params={"domain": domain},
+                                headers=self.auth_header)
 
         try:
-            return DomainAvailable(response["available"], response["currency"],
-                                   response["definitive"], response["domain"],
-                                   response["period"], response["price"])
+            data = response.json()
+            return DomainAvailable(data["available"], data["currency"],
+                                   data["definitive"], data["domain"],
+                                   data["period"], data["price"])
         except Exception:
-            return None
+            return response.status_code
 
     def add_records(self, domain: str, records: list[DomainRecord]):
         """
@@ -55,10 +55,10 @@ class GodaddyClient:
         return response
 
     def records_for_domain(self,
-                           domain: str) -> Union[list[DomainRecord], None]:
+                           domain: str) -> Union[list[DomainRecord], int]:
         """
-        Returns list of existing records for the domain, or None
-        if request was not successful. 
+        Returns list of existing records for the domain,
+        or status code (int) if request was not successful. 
         """
         response = requests.get(f"{self.api_url}v1/domains/{domain}/records",
                                 headers=self.auth_header)
@@ -69,7 +69,7 @@ class GodaddyClient:
                 for record in response.json()
             ]
         else:
-            return None
+            return response.status_code
 
     def add_a_record(self, domain: str, record_name: str, ip_address: str):
         """
