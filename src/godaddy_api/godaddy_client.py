@@ -1,6 +1,5 @@
 from dataclasses import asdict
 import requests
-import os
 from typing import Union
 from godaddy_api.data.domain_available import DomainAvailable
 from godaddy_api.data.domain_record import DomainRecord
