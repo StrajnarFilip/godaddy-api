@@ -48,11 +48,8 @@ class GodaddyClient:
         """
 
         record_dictionaries = [asdict(record) for record in records]
-        response = self.session.patch(
-            f"{self.api_url}v1/domains/{domain}/records",
-            json=record_dictionaries)
-
-        return response
+        return self.session.patch(f"{self.api_url}v1/domains/{domain}/records",
+                                  json=record_dictionaries)
 
     def records_for_domain(self,
                            domain: str) -> Union[list[DomainRecord], Response]:
