@@ -1,5 +1,5 @@
 from dataclasses import asdict
-import requests
+from requests import Session, Response
 from typing import Union
 from godaddy_api.data.domain_available import DomainAvailable
 from godaddy_api.data.domain_record import DomainRecord
@@ -19,19 +19,19 @@ class GodaddyClient:
         self.api_key = api_key
         self.api_secret = api_secret
         self.api_url = api_url
-        self.auth_header = {
-            "Authorization": f"sso-key {self.api_key}:{self.api_secret}"
-        }
+        self.session = Session()
+        self.session.headers[
+            "Authorization"] = f"sso-key {self.api_key}:{self.api_secret}"
 
-    def domains_available(self, domain: str) -> Union[DomainAvailable, int]:
+    def domains_available(self,
+                          domain: str) -> Union[DomainAvailable, Response]:
         """
         Check if domain is available to be purchased.
         Within DomainAvailable dataclass, there is `available` boolean field.
-        In case of exception, it returns status code of response.
+        In case of exception, it returns whole response.
         """
-        response = requests.get(f"{self.api_url}v1/domains/available",
-                                params={"domain": domain},
-                                headers=self.auth_header)
+        response = self.session.get(f"{self.api_url}v1/domains/available",
+                                    params={"domain": domain})
 
         try:
             data = response.json()
@@ -39,28 +39,30 @@ class GodaddyClient:
                                    data["definitive"], data["domain"],
                                    data["period"], data["price"])
         except Exception:
-            return response.status_code
+            return response
 
-    def add_records(self, domain: str, records: list[DomainRecord]):
+    def add_records(self, domain: str,
+                    records: list[DomainRecord]) -> Response:
         """
         Returns entire response.
         """
 
         record_dictionaries = [asdict(record) for record in records]
-        response = requests.patch(f"{self.api_url}v1/domains/{domain}/records",
-                                  json=record_dictionaries,
-                                  headers=self.auth_header)
+        response = self.session.patch(
+            f"{self.api_url}v1/domains/{domain}/records",
+            json=record_dictionaries)
 
         return response
 
     def records_for_domain(self,
-                           domain: str) -> Union[list[DomainRecord], int]:
+                           domain: str) -> Union[list[DomainRecord], Response]:
         """
         Returns list of existing records for the domain,
-        or status code (int) if request was not successful. 
+        or response if request was not successful. 
         """
-        response = requests.get(f"{self.api_url}v1/domains/{domain}/records",
-                                headers=self.auth_header)
+        response = self.session.get(
+            f"{self.api_url}v1/domains/{domain}/records")
+
         if response.status_code == 200:
             return [
                 DomainRecord(record["data"], record["name"], 0, 0, "", "",
@@ -68,9 +70,10 @@ class GodaddyClient:
                 for record in response.json()
             ]
         else:
-            return response.status_code
+            return response
 
-    def add_a_record(self, domain: str, record_name: str, ip_address: str):
+    def add_a_record(self, domain: str, record_name: str,
+                     ip_address: str) -> Response:
         """
         Returns entire response.
         Status code `200` means it's successful.
@@ -92,38 +95,31 @@ class GodaddyClient:
                               1)
         return self.add_records(domain, [record])
 
-    def remove_a_record(self, domain: str, record_name: str):
+    def remove_a_record(self, domain: str, record_name: str) -> Response:
         """
         Returns entire response.
         Status code `204` means it's successful.
         Status code `404` means record didn't exist.
         """
         record_type = 'A'
-        response = requests.delete(
-            f"{self.api_url}v1/domains/{domain}/records/{record_type}/{record_name}",
-            headers=self.auth_header)
+        return self.session.delete(
+            f"{self.api_url}v1/domains/{domain}/records/{record_type}/{record_name}"
+        )
 
-        return response
-
-    def set_a_record(self, domain: str, record_name: str, ip_address: str):
+    def set_a_record(self, domain: str, record_name: str,
+                     ip_address: str) -> Response:
         """
         Removes the record and adds it again. Returns response from
         request that adds the record, so successful status code is `200`. 
         """
         self.remove_a_record(domain, record_name)
-        response = self.add_a_record(domain, record_name, ip_address)
-        return response
+        return self.add_a_record(domain, record_name, ip_address)
 
     def list_domains(self):
         """
         Lists domains owned.
         """
 
-        response = requests.get(f"{self.api_url}v1/domains",
-                                headers=self.auth_header)
+        response = self.session.get(f"{self.api_url}v1/domains")
 
-        print(response)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return response.status_code
+        return response.json() if response.status_code == 200 else response
