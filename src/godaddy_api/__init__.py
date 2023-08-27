@@ -4,6 +4,7 @@
 
 import os
 from typing import Union
+from godaddy_api.godaddy_client import GodaddyClient
 
 
 def get_api_key() -> Union[str, None]:
